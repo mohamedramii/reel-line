@@ -3,7 +3,7 @@ import { gsap } from '@shared/gsap.js';
 import { isMotionReduced } from '@shared/motion.jsx';
 import { useLang } from '@shared/i18n.jsx';
 import { Reel, useReelModal } from '@shared/media.jsx';
-import { reelById } from '@shared/content.js';
+import { reelOf } from './reels.js';
 import { useCallLink } from '@shared/brief.jsx';
 import { jump, useInView, useMedia } from '@shared/scroll.jsx';
 import { usePageOpen } from './Loader.jsx';
@@ -13,7 +13,7 @@ import { usePageOpen } from './Loader.jsx';
 // After that they are the visitor's: a drag or a tap pulls them apart and links them again, and so does the button.
 // The upper frame is the thinking (it looks like the kit's reel cover), the lower one is the reel itself. Grey and
 // still until they are linked; colour and movement after. `--p` on the stage is 0 (apart) to 1 (linked).
-const REEL = reelById('santos');
+const REEL = reelOf('ghazala'); // the reel of the first screen (the owner's choice, 16 Nov 2026)
 
 export default function Hero() {
   const { t, c } = useLang();
@@ -133,7 +133,7 @@ export default function Hero() {
                 className="fr__watch"
                 onPointerDown={(e) => e.stopPropagation()}
                 aria-label={t.ui.watch}
-                onClick={() => openReel(REEL, `${t.reels[REEL.id].title} · ${t.reels[REEL.id].note}`)}
+                onClick={() => openReel(REEL, `${(c.reels?.[REEL.id] || t.reels[REEL.id]).title} · ${(c.reels?.[REEL.id] || t.reels[REEL.id]).note}`)}
               >
                 {t.ui.sound}
               </button>

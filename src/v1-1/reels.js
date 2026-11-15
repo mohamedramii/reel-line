@@ -3,7 +3,7 @@
 // Mamo Fried Chicken reel (the same brand twice) and the Alexandria places reel.
 // `tile` is a 360p cut of the first seven of the reel's best twelve seconds, `loop` those twelve at 720p,
 // `full` the whole reel with sound. The cut also has a scrub clip and a filmstrip of each.
-// The first screen plays the Santos reel.
+// The first screen plays the Ghazala reel.
 import { reelById } from '@shared/content.js';
 
 const fresh = (id, focus = '50% 50%') => ({

@@ -3,7 +3,6 @@ import { gsap } from '@shared/gsap.js';
 import { isMotionReduced } from '@shared/motion.jsx';
 import { useLang } from '@shared/i18n.jsx';
 import { LogoMotion } from '@shared/brand.jsx';
-import { reelById } from '@shared/content.js';
 import { preloadVideos } from '@shared/preload.js';
 import { reels } from './reels.js';
 import { ROWS, sizeNow } from './Line.jsx';
@@ -26,7 +25,7 @@ export const usePageOpen = () => useContext(OpenCtx);
 // (the first-screen reel, then the strip of the line: short 360p cuts).
 function firstClips() {
   const size = sizeNow();
-  const hero = reelById('santos');
+  const hero = reels.find((r) => r.id === 'ghazala'); // the first screen's reel (see Hero.jsx)
   return [size === 'phone' ? hero.tile : hero.loop, ...ROWS[size].map((id) => reels.find((r) => r.id === id).tile)];
 }
 // What goes on downloading behind the open page: the six scrub clips of the cut, two screens further down.
