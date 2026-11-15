@@ -5,10 +5,12 @@ import { useLang } from '@shared/i18n.jsx';
 import { Reel, useReelModal } from '@shared/media.jsx';
 import { reelById } from '@shared/content.js';
 import { useCallLink } from '@shared/brief.jsx';
-import { jump, useInView } from '@shared/scroll.jsx';
+import { jump, useInView, useMedia } from '@shared/scroll.jsx';
+import { usePageOpen } from './Loader.jsx';
 
-// The first screen: two frames, apart. The visitor drags one onto the other (or taps, or uses the button) and they
+// The first screen: two frames that start apart and, as soon as the page opens, come together by themselves and
 // lock in the arrangement of the logo: upper right behind, lower left in front, with a clear gap round the front one.
+// After that they are the visitor's: a drag or a tap pulls them apart and links them again, and so does the button.
 // The upper frame is the thinking (it looks like the kit's reel cover), the lower one is the reel itself. Grey and
 // still until they are linked; colour and movement after. `--p` on the stage is 0 (apart) to 1 (linked).
 const REEL = reelById('santos');
@@ -22,8 +24,12 @@ export default function Hero() {
   const stage = useRef(null);
   const prox = useRef({ p: 0 });
   const drag = useRef(null);
-  const [linked, setLinked] = useState(false);
+  const open = usePageOpen();
+  const phone = useMedia('(max-width: 759px)');
+  const [linked, setLinked] = useState(reduced); // with reduced motion they are linked from the start
   const [touched, setTouched] = useState(false);
+  const [dragged, setDragged] = useState(false); // the visitor has taken a frame in hand at least once
+  const held = useRef(false); // the visitor has taken the frames: nothing moves them by itself any more
   const onScreen = useInView(stage, { threshold: 0.2 });
 
   const paint = useCallback(() => {
@@ -43,10 +49,24 @@ export default function Hero() {
     [reduced, paint],
   );
   useEffect(() => () => gsap.killTweensOf(prox.current), []);
+  // linked from the start when motion is reduced
+  useEffect(() => {
+    if (!reduced) return;
+    prox.current.p = 1;
+    paint();
+  }, [reduced, paint]);
+  // the page has opened: the two frames link by themselves, once
+  useEffect(() => {
+    if (reduced || !open) return undefined;
+    const id = setTimeout(() => !held.current && settle(1), 950); // as the last of the loading screen leaves
+    return () => clearTimeout(id);
+  }, [open, reduced, settle]);
 
   const onDown = (which) => (e) => {
     if (e.button) return;
+    held.current = true;
     setTouched(true);
+    setDragged(true);
     gsap.killTweensOf(prox.current);
     const span = Math.max(110, stage.current.getBoundingClientRect().width * 0.34);
     drag.current = { which, x: e.clientX, y: e.clientY, p: prox.current.p, span, moved: false };
@@ -102,7 +122,7 @@ export default function Hero() {
             <span>{h.thinkAr}</span>
           </div>
           <div className="fr fr--lower" {...frameProps('lower')}>
-            <Reel item={REEL} size="loop" playing={linked && onScreen && !reduced} />
+            <Reel key={phone ? 'tile' : 'loop'} item={REEL} size={phone ? 'tile' : 'loop'} playing={linked && onScreen && !reduced} />
             <span className="fr__cap">
               <strong className="ltr" lang="en">{h.reel}</strong>
               <span>{h.reelAr}</span>
@@ -119,13 +139,14 @@ export default function Hero() {
               </button>
             )}
           </div>
-          <span className={`cue ${touched || linked ? 'is-off' : ''}`} aria-hidden="true">
+          {/* the frames link by themselves, so the cue only speaks once the visitor has let them go with the button */}
+          <span className={`cue ${!linked && touched && !dragged ? '' : 'is-off'}`} aria-hidden="true">
             <i />
             {h.cue}
           </span>
         </div>
         <div className="hero__ctrl">
-          <button type="button" className="link-btn" id="hero-link" aria-pressed={linked} onClick={() => { setTouched(true); settle(linked ? 0 : 1); }}>
+          <button type="button" className="link-btn" id="hero-link" aria-pressed={linked} onClick={() => { held.current = true; setTouched(true); settle(linked ? 0 : 1); }}>
             {linked ? h.unlink : h.link}
           </button>
           <span className="sr-only" role="status">{linked ? h.linked : h.apart}</span>

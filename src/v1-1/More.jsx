@@ -1,137 +1,153 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { gsap } from '@shared/gsap.js';
-import { isMotionReduced, MotionSwitch } from '@shared/motion.jsx';
+import { isMotionReduced } from '@shared/motion.jsx';
 import { LangButton, useLang } from '@shared/i18n.jsx';
 import { Logo, LogoMotion } from '@shared/brand.jsx';
-import { aLaCarte, brand, egp, maxSaving, packages, prices, saving, waLink } from '@shared/content.js';
+import { brand, egp, prices, waLink } from '@shared/content.js';
 import { useBrief } from '@shared/brief.jsx';
-import { jump, scrollToId, useInView } from '@shared/scroll.jsx';
+import { jump, scrollToId, useInView, useRunway } from '@shared/scroll.jsx';
+import { packageFrom } from './offer.js';
+import { LINKS } from './nav.js';
 
-// ---------------------------------------------------------------- process: five frames, each linked to the next
+// ---------------------------------------------------------------- process: five linked frames, and the scroll moves from one to the next
+// A held scene: the stage stays under the header while the scroll goes through the five steps, one frame after the
+// other. A tap on a frame, the arrow keys and the "next" button only scroll the page to that step, so the scroll is
+// the single source of truth. Reduced motion: no held scene, the frames are plain tabs.
+// `--pp` on the section is how far through the five steps the scroll is, 0 to 1.
 export function Process() {
   const { t, c } = useLang();
+  const reduced = isMotionReduced();
+  const runway = useRef(null);
   const ref = useRef(null);
   const seen = useInView(ref, { once: true, threshold: 0.4 });
-  const [at, setAt] = useState(0);
   const steps = t.process;
+  const n = steps.length;
+  const [at, setAt] = useState(0);
+  const now = useRef(0);
   const step = steps[at];
+
+  const place = useCallback(
+    (p) => {
+      runway.current?.style.setProperty('--pp', p.toFixed(4));
+      const i = Math.min(n - 1, Math.floor(p * n));
+      if (i !== now.current) {
+        now.current = i;
+        setAt(i);
+      }
+    },
+    [n],
+  );
+  const goTo = useRunway(runway, place, { enabled: !reduced });
+  // show a step: with a held scene that is a scroll to the middle of its share of the runway
+  const show = (i) => {
+    const to = Math.min(n - 1, Math.max(0, i));
+    if (reduced) {
+      now.current = to;
+      setAt(to);
+    } else goTo((to + 0.5) / n);
+    return to;
+  };
   const onKey = (e) => {
     const rtl = document.documentElement.dir === 'rtl';
     const d = e.key === (rtl ? 'ArrowLeft' : 'ArrowRight') ? 1 : e.key === (rtl ? 'ArrowRight' : 'ArrowLeft') ? -1 : 0;
     if (!d) return;
     e.preventDefault();
-    const next = Math.min(steps.length - 1, Math.max(0, at + d));
-    setAt(next);
-    e.currentTarget.parentElement.children[next]?.focus();
+    const next = show(at + d);
+    e.currentTarget.parentElement.children[next]?.focus({ preventScroll: true });
   };
   return (
-    <section className="scr process" id="process" aria-labelledby="proc-h">
-      <header className="head">
-        <h2 id="proc-h">{c.process.h2}</h2>
-      </header>
-      <div className={`links ${seen ? 'is-in' : ''}`} ref={ref} role="tablist" aria-label={t.nav.process} style={{ '--at': at }}>
-        {steps.map((s, i) => (
-          <button
-            key={s.title}
-            type="button"
-            role="tab"
-            id={`proc-tab-${i}`}
-            aria-selected={i === at}
-            aria-controls="proc-panel"
-            tabIndex={i === at ? 0 : -1}
-            className={i < at ? 'is-done' : ''}
-            style={{ '--i': i }}
-            onClick={() => setAt(i)}
-            onKeyDown={onKey}
-          >
-            <span className="ltr">{String(i + 1).padStart(2, '0')}</span>
-            <b>{s.title}</b>
-          </button>
-        ))}
-      </div>
-      <div className="process__panel" id="proc-panel" role="tabpanel" aria-labelledby={`proc-tab-${at}`}>
-        <div key={at} className="process__text">
-          <p className="process__when">{c.process.step(at + 1)}</p>
-          <h3>{step.title}</h3>
-          <p>{step.text}</p>
+    <section className={`process ${reduced ? 'is-flat' : 'is-held'}`} id="process" aria-labelledby="proc-h" ref={runway} style={{ '--steps': n }}>
+      <div className="scr process__stage">
+        <header className="head">
+          <h2 id="proc-h">{c.process.h2}</h2>
+          <p className="hint">{reduced ? c.process.hintReduced : c.process.hint}</p>
+        </header>
+        <div className={`links ${seen ? 'is-in' : ''}`} ref={ref} role="tablist" aria-label={t.nav.process} style={{ '--at': at }}>
+          {steps.map((s, i) => (
+            <button
+              key={s.title}
+              type="button"
+              role="tab"
+              id={`proc-tab-${i}`}
+              aria-selected={i === at}
+              aria-controls="proc-panel"
+              tabIndex={i === at ? 0 : -1}
+              className={i < at ? 'is-done' : ''}
+              style={{ '--i': i }}
+              onClick={() => show(i)}
+              onKeyDown={onKey}
+            >
+              <span className="ltr">{String(i + 1).padStart(2, '0')}</span>
+              <b>{s.title}</b>
+            </button>
+          ))}
         </div>
-        <ul className="process__points" key={`p${at}`}>
-          {(at === 1 ? c.process.ask : step.points).map((p) => <li key={p}>{p}</li>)}
-        </ul>
-        <button type="button" className="btn btn--line process__next" onClick={() => setAt((at + 1) % steps.length)}>
-          {at === steps.length - 1 ? c.process.again : c.process.next}
-        </button>
+        <div className="process__panel" id="proc-panel" role="tabpanel" aria-labelledby={`proc-tab-${at}`}>
+          <div key={at} className="process__text">
+            <p className="process__when">{c.process.step(at + 1)}</p>
+            <h3>{step.title}</h3>
+            <p>{step.text}</p>
+          </div>
+          <ul className="process__points" key={`p${at}`}>
+            {(at === 1 ? c.process.ask : step.points).map((p) => <li key={p}>{p}</li>)}
+          </ul>
+          <button type="button" className="btn btn--line process__next" id="proc-next" onClick={() => show(at === n - 1 ? 0 : at + 1)}>
+            {at === n - 1 ? c.process.again : c.process.next}
+          </button>
+        </div>
+        <i className="process__bar" aria-hidden="true" />
       </div>
     </section>
   );
 }
 
-// ---------------------------------------------------------------- packages: pick the number of reels, see the sum
+// ---------------------------------------------------------------- the package: from a price, set by analysis and by agreement
+// The offer of ./offer.js: a package starts from a price and is made for the brand. The three lines say what its
+// price follows. The button ticks "full package" in the brief and goes to the form. Beside it, the single services.
+const PACKAGE_NEED = 5; // "full package" in the shared list of needs
+
 export function Pricing() {
   const { t, c } = useLang();
   const brief = useBrief();
-  const [pick, setPick] = useState(1); // Growth, the agency's own "our pick"
-  const pkg = packages[pick];
   const p = t.pricing;
-  const extra = ((pkg.posts - 10) / 5) * prices.posts5;
-  const choose = () => {
-    brief.set('pkg', pkg.id);
+  const k = c.pricing;
+  const ask = () => {
+    if (!brief.needs.includes(PACKAGE_NEED)) brief.toggleNeed(PACKAGE_NEED);
     scrollToId('contact');
-  };
-  const onKey = (e) => {
-    const rtl = document.documentElement.dir === 'rtl';
-    const d = e.key === (rtl ? 'ArrowLeft' : 'ArrowRight') || e.key === 'ArrowDown' ? 1 : e.key === (rtl ? 'ArrowRight' : 'ArrowLeft') || e.key === 'ArrowUp' ? -1 : 0;
-    if (!d) return;
-    e.preventDefault();
-    const next = (pick + d + packages.length) % packages.length;
-    setPick(next);
-    e.currentTarget.parentElement.children[next]?.focus();
   };
   return (
     <section className="scr pricing" id="pricing" aria-labelledby="price-h">
       <header className="head">
-        <h2 id="price-h">{c.pricing.h2}</h2>
-        <p>{p.sub}</p>
+        <h2 id="price-h">{k.h2}</h2>
+        <p>{k.sub}</p>
       </header>
-      <div className="pricing__body">
-        <div className="packs" role="radiogroup" aria-label={c.pricing.pick}>
-          {packages.map((k, i) => (
-            <button key={k.id} type="button" role="radio" aria-checked={i === pick} tabIndex={i === pick ? 0 : -1} onClick={() => setPick(i)} onKeyDown={onKey}>
-              <b className="ltr">{k.reels}</b>
-              <span>{p.names[k.id]}</span>
-            </button>
-          ))}
-        </div>
-        <article className="pack" aria-live="polite">
-         <div className="pack__a">
-          <header>
-            <h3>{p.names[pkg.id]}</h3>
-            {pkg.featured && <span className="pack__flag">{p.featured}</span>}
-          </header>
-          <p className="pack__price"><b className="ltr">{egp(pkg.price)}</b> {t.ui.currency}</p>
-          <p className="pack__note">{p.notes[pkg.id]}</p>
-         </div>
-         <div className="pack__b">
-          <ul className="pack__list">
-            <li>{p.reels(pkg.reels)}</li>
-            <li>{p.posts(pkg.posts)}</li>
-            <li>{p.page}</li>
-          </ul>
-          <p className="pack__sum">
-            <span>{c.pricing.sumLabel}</span>
-            <b className="ltr">{c.pricing.sum(pkg.reels, egp(prices.reel), egp(prices.pagePlus10), extra ? egp(extra) : '')} = {egp(aLaCarte(pkg))}</b>
-          </p>
-          <p className="pack__save">{p.save(egp(saving(pkg)))}</p>
-          <button type="button" className="btn" id="pack-choose" onClick={choose}>{p.choose}</button>
-         </div>
+      <div className="pricing__body pricing__body--offer">
+        <article className="offer">
+          <div className="offer__a">
+            <h3>{k.title}</h3>
+            <p className="offer__price" id="offer-price">
+              <span>{k.from}</span> <b className="ltr">{egp(packageFrom)}</b> {t.ui.currency}
+            </p>
+            <p className="offer__note">{k.note}</p>
+            <button type="button" className="btn" id="offer-ask" onClick={ask}>{k.ask}</button>
+          </div>
+          <ol className="offer__how">
+            {k.how.map((x, i) => (
+              <li key={x.title}>
+                <span className="ltr" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <b>{x.title}</b>
+                <p>{x.text}</p>
+              </li>
+            ))}
+          </ol>
         </article>
         <aside className="singles">
           <h3>{p.singlesTitle}</h3>
           <dl>
-            {Object.keys(p.singles).map((k) => (
-              <div key={k}>
-                <dt>{p.singles[k]}</dt>
-                <dd><b className="ltr">{egp(prices[k])}</b> {t.ui.currency}</dd>
+            {Object.keys(p.singles).map((s) => (
+              <div key={s}>
+                <dt>{p.singles[s]}</dt>
+                <dd><b className="ltr">{egp(prices[s])}</b> {t.ui.currency}</dd>
               </div>
             ))}
             <div className="singles__ask">
@@ -149,7 +165,7 @@ export function Pricing() {
 export function Faq() {
   const { t, c } = useLang();
   const [open, setOpen] = useState(0);
-  const save = egp(maxSaving());
+  const from = egp(packageFrom);
   return (
     <section className="scr faq" id="faq" aria-labelledby="faq-h">
       <header className="head">
@@ -166,7 +182,7 @@ export function Faq() {
               </button>
             </h3>
             <div id={`faq-a-${i}`} role="region" aria-labelledby={`faq-q-${i}`} hidden={i !== open}>
-              <p>{typeof f.a === 'function' ? f.a(save) : f.a}</p>
+              <p>{c.faq.answers[i] ? c.faq.answers[i](from) : f.a}</p>
             </div>
           </li>
         ))}
@@ -268,7 +284,6 @@ export function Contact() {
 // ---------------------------------------------------------------- footer
 export function Footer() {
   const { t, c } = useLang();
-  const links = ['work', 'services', 'digital', 'process', 'pricing', 'faq'];
   return (
     <footer className="foot">
       <div className="foot__top">
@@ -276,12 +291,11 @@ export function Footer() {
         <p className="foot__line ltr" lang="en">{brand.line}</p>
       </div>
       <nav className="foot__nav" aria-label={t.ui.menu}>
-        {links.map((l) => <a key={l} href={`#${l}`} onClick={jump}>{t.nav[l]}</a>)}
+        {LINKS.map(([l, id]) => <a key={l} href={`#${id}`} onClick={jump}>{t.nav[l]}</a>)}
         <a href={brand.whatsapp} target="_blank" rel="noopener noreferrer">{t.ui.whatsapp} <span className="ltr">{brand.phone}</span></a>
       </nav>
       <div className="foot__end">
         <span>© 2026 <span className="ltr">reel line</span> · {t.city}</span>
-        <MotionSwitch />
         <LangButton />
         <a href="#top" onClick={jump}>{c.footer.top}</a>
       </div>

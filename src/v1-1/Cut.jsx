@@ -4,10 +4,9 @@ import { useLang } from '@shared/i18n.jsx';
 import { useReelModal } from '@shared/media.jsx';
 import { reels } from './reels.js';
 import { getLenis, headerH, useInView, useMedia, useRunway } from '@shared/scroll.jsx';
-import { pad2, useHDrag } from '../v2/line.js';
+import { cachedUrl } from '@shared/preload.js';
+import { pad2, useHDrag } from './line.js';
 
-// Design 1.1 keeps its own copy of Design 2's cut, because its six reels are its own (reels.js): three of the
-// shared ones and three new ones, whose names are in this design's copy.
 // The cut: a held scene laid out like an edit suite. A 9:16 viewer, and under it a timeline with one track of six
 // clip blocks (each a filmstrip of that reel) and the white line as its playhead.
 // The page scroll moves the playhead across the track (the scroll is the single source of truth: dragging the
@@ -46,6 +45,7 @@ export default function Cut() {
   const stage = useRef(null);
   const vids = useRef([]);
   const want = useRef([]); // the time each clip should be showing
+  const srcs = useRef([]); // each clip's address, fixed when it is first asked for (the downloaded copy when the loading screen has it)
   const tcEl = useRef(null);
   const at = useRef(0);
   const lastP = useRef(0); // where the scroll last put the playhead
@@ -154,7 +154,7 @@ export default function Cut() {
                 key={r.id}
                 ref={(el) => { vids.current[i] = el; }}
                 className={i === active ? 'is-on' : ''}
-                src={armed(i) ? scrubSrc(r) : undefined}
+                src={armed(i) ? (srcs.current[i] ||= cachedUrl(scrubSrc(r))) : undefined}
                 poster={r.poster}
                 muted
                 playsInline

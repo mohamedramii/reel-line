@@ -1,39 +1,209 @@
-// Design 1.1: Design 1's wording, plus the wording of the two sections brought in from Design 2 (the line between
-// real and reel, and the cut). Nothing new is claimed: the added lines come from those two designs' own copy.
-import v1 from '../v1/copy.js';
-import v2 from '../v2/copy.js';
-
-const fromHero = ({ realGloss, reelGloss, cue, slider, valueText, stageLabel }) => ({ realGloss, reelGloss, cue, slider, valueText, stageLabel });
-
+// This page's own wording. Facts stay in @shared/content.js, the shared wording in @shared/ar.js and en.js, and the
+// package offer in ./offer.js. No figure is typed here: prices are passed in by the component that prints them.
+// "Real thinking. Reel impact." and "Ideas, connected." are the brand kit's own lines and stay in English, and so do
+// the words "real" and "reel" of the name.
 const copy = {
   ar: {
-    ...v1.ar,
+    title: 'reel line — وكالة تسويق متكاملة في إسكندرية',
+    loader: { label: 'الصفحة بتتحمّل', say: 'بنجهّز الريلز' },
+    hero: {
+      h1a: 'فكرة واضحة.',
+      h1b: 'وشغل',
+      h1u: 'مترابط.',
+      sub: 'ريل لاين وكالة تسويق متكاملة: ريلز، إدارة صفحات، بوستات، سبونسر، ومواقع وتطبيقات. فريق واحد بيربط التفكير بالتنفيذ.',
+      subShort: 'وكالة تسويق متكاملة: ريلز، صفحات، بوستات، سبونسر، ومواقع وتطبيقات.',
+      think: 'Real thinking.',
+      thinkAr: 'نفكّر الأول.',
+      reel: 'Reel impact.',
+      reelAr: 'وبعدين نصوّر.',
+      cue: 'اسحب الكادر واربطه',
+      link: 'اربط الكادرين',
+      unlink: 'فُكّ الكادرين',
+      linked: 'الكادرين اتربطوا، والريل اشتغل.',
+      apart: 'الكادرين مفكوكين.',
+      packages: 'شوف الباقات',
+      stageLabel: 'كادرين: كادر التفكير وكادر الريل. بيتربطوا لوحدهم أول ما الصفحة تفتح، وتقدر تسحب أي واحد وتفكّهم أو تربطهم.',
+    },
     line: {
-      ...fromHero(v2.ar.hero),
       h2: 'بين الواقع والريل… خط.',
       sub: 'وده اسمنا. بنبدأ من مكانك زي ما هو، ونطلّع منه ريل. اسحب الخط وشوف.',
+      realGloss: 'الواقع',
+      reelGloss: 'الريل',
+      cue: 'اسحب الخط',
+      slider: 'الخط بين الواقع والريل',
+      valueText: (reel) => `الريل ${reel}% من الشريط`,
+      stageLabel: 'شريط ريلز من شغل الفريق. شمال الخط الواقع: رمادي وثابت. ويمينه الريل: ملوّن وبيتحرك.',
     },
-    cut: v2.ar.cut,
+    cut: {
+      h2: 'الريل بيتعمل على الخط.',
+      sub: 'انزل بالسكرول والخط يعدّي على ريلز من شغلنا، فريم فريم.',
+      subReduced: 'دوس على أي ريل في التراك، وشغّله كامل بالصوت.',
+      of: (a, b) => `ريل ${a} من ${b}`,
+      time: 'الوقت',
+      go: (title) => `روح لريل ${title}`,
+      open: (title) => `شوف ريل ${title} كامل بالصوت`,
+      track: 'تراك الريلز: اسحب الخط أو دوس على أي ريل',
+    },
     // the three new reels: the brand's name as it is written in the reel, and what the reel shows
     reels: {
       ghazala: { title: 'Ghazala', note: 'زيارة وتجربة الأكل' },
       near: { title: 'Near Cafe', note: 'جولة في المكان' },
       vega: { title: 'De La Vega', note: 'البرجر طبقة طبقة' },
     },
+    services: {
+      h2: 'ست خدمات، وكل واحدة مربوطة باللي بعدها.',
+      sub: 'فريق واحد مترابط للاستراتيجية والمحتوى والإعلانات والبرمجة.',
+      of: (a, b) => `${a} من ${b}`,
+      hint: 'انزل بالسكرول والخدمات تعدّي قدامك',
+      hintReduced: 'اسحب بالعرض أو استخدم الأسهم',
+      // the packages card: the offer of ./offer.js
+      pack: {
+        text: 'ريلز وإدارة صفحة وبوستات وإعلانات في خطة واحدة على مقاس براندك، بعد ما نحلله ونتفق على المطلوب.',
+        tags: ['تحليل', 'اتفاق', 'تنفيذ'],
+      },
+    },
+    digital: {
+      h2: 'ومش محتوى بس. بنبني موقعك وتطبيقك.',
+      open: (name) => `شوف تسجيل ${name} كامل`,
+    },
+    process: {
+      h2: 'من أول مكالمة لصفحة مليانة محتوى.',
+      hint: 'انزل بالسكرول والخطوة اللي بعدها تيجي',
+      hintReduced: 'دوس على أي خطوة',
+      step: (n) => `الخطوة ${n}`,
+      next: 'الخطوة الجاية',
+      again: 'من الأول',
+      // من كاروسيل الكيت: «قبل ما تنشر»
+      ask: ['بنكلّم مين؟', 'عايزينه يعمل إيه؟', 'فكرة واحدة تكفي.'],
+    },
+    pricing: {
+      h2: 'الباقة بتتفصّل على براندك.',
+      sub: 'مفيش باقة واحدة تناسب الكل. بنحلل براندك الأول، وبعدها نتفق على المطلوب وسعره.',
+      title: 'باقة على مقاسك',
+      from: 'من',
+      note: 'والسعر النهائي حسب اللي براندك محتاجه، وحسب اتفاقنا.',
+      ask: 'اطلب تحليل لبراندك',
+      how: [
+        { title: 'التحليل', text: 'بنشوف براندك واقف فين، ومحتاج إيه عشان يكبر.' },
+        { title: 'الاتفاق', text: 'بنحدد سوا المطلوب: ريلز، بوستات، إدارة صفحة، وإعلانات.' },
+        { title: 'السعر', text: 'بيتحدد على المطلوب، وبنتفق عليه قبل ما نبدأ.' },
+      ],
+    },
+    faq: {
+      h2: 'أسئلة بتتسأل قبل ما نبدأ.',
+      ask: 'سؤالك مش هنا؟ اسألنا على واتساب',
+      // answers that the new package offer changes, by the question's place in the shared list (0-based)
+      answers: {
+        1: (from) => `الباقة خطة كاملة بنبنيها بعد ما نحلل براندك: ريلز وإدارة صفحة وبوستات وإعلانات حسب اللي محتاجه، وبتبدأ من ${from} ج.م. والخدمات المنفصلة لو محتاج حاجة واحدة بس.`,
+      },
+    },
+    contact: {
+      h2: 'اربط براندك بينا.',
+      sub: 'اكتب اسمك واسم البراند، واختار محتاج إيه. الرسالة بتتكتب قدامك.',
+      you: 'براندك',
+      us: 'reel line',
+      linked: 'اتربطنا. فاضل تدوس إرسال.',
+    },
+    footer: { top: 'ارجع لفوق' },
   },
   en: {
-    ...v1.en,
+    title: 'reel line — a full-service marketing agency in Alexandria',
+    loader: { label: 'The page is loading', say: 'Getting the reels ready' },
+    hero: {
+      h1a: 'Clear ideas.',
+      h1b: 'Connected',
+      h1u: 'work.',
+      sub: 'reel line is a full-service marketing agency: reels, page management, posts, sponsored ads, websites and apps. One team that connects the thinking to the making.',
+      subShort: 'A full-service marketing agency: reels, pages, posts, sponsored ads, websites and apps.',
+      think: 'Real thinking.',
+      thinkAr: 'First we think.',
+      reel: 'Reel impact.',
+      reelAr: 'Then we shoot.',
+      cue: 'Drag a frame to link them',
+      link: 'Link the frames',
+      unlink: 'Unlink the frames',
+      linked: 'The frames are linked and the reel is playing.',
+      apart: 'The frames are apart.',
+      packages: 'See the packages',
+      stageLabel: 'Two frames: the thinking frame and the reel frame. They link by themselves when the page opens, and you can drag either one to pull them apart or link them again.',
+    },
     line: {
-      ...fromHero(v2.en.hero),
       h2: 'Between real and reel, there is a line.',
       sub: 'That is our name. We start from your place as it is and turn it into a reel. Drag the line and see.',
+      realGloss: 'as it is',
+      reelGloss: 'as a reel',
+      cue: 'Drag the line',
+      slider: 'The line between real and reel',
+      valueText: (reel) => `${reel}% of the strip is reel`,
+      stageLabel: 'A strip of reels made by the team. Left of the line is real: grey and still. Right of it is reel: in colour and moving.',
     },
-    cut: v2.en.cut,
+    cut: {
+      h2: 'A reel is made on the line.',
+      sub: 'Keep scrolling and the line runs across reels we made, frame by frame.',
+      subReduced: 'Tap any reel on the track, then play it in full with sound.',
+      of: (a, b) => `Reel ${a} of ${b}`,
+      time: 'Time',
+      go: (title) => `Go to the ${title} reel`,
+      open: (title) => `Watch the ${title} reel in full, with sound`,
+      track: 'The reels track: drag the line or tap a reel',
+    },
     reels: {
       ghazala: { title: 'Ghazala', note: 'A visit and a tasting' },
       near: { title: 'Near Cafe', note: 'A tour of the place' },
       vega: { title: 'De La Vega', note: 'The burger, layer by layer' },
     },
+    services: {
+      h2: 'Six services, each linked to the next.',
+      sub: 'One connected team for strategy, content, ads and code.',
+      of: (a, b) => `${a} of ${b}`,
+      hint: 'Keep scrolling and the services pass by',
+      hintReduced: 'Swipe sideways or use the arrows',
+      pack: {
+        text: 'Reels, page management, posts and ads in one plan made to fit your brand, after we analyse it and agree on the work.',
+        tags: ['Analysis', 'Agreement', 'Delivery'],
+      },
+    },
+    digital: {
+      h2: 'Not only content. We build your site and your app.',
+      open: (name) => `Watch the full ${name} recording`,
+    },
+    process: {
+      h2: 'From the first call to a feed full of content.',
+      hint: 'Keep scrolling and the next step comes up',
+      hintReduced: 'Tap any step',
+      step: (n) => `Step ${n}`,
+      next: 'Next step',
+      again: 'Start again',
+      ask: ['Who are we talking to?', 'What should they do?', 'One idea is enough.'],
+    },
+    pricing: {
+      h2: 'A package made to fit your brand.',
+      sub: 'No single package fits everyone. We analyse your brand first, then agree on the work and its price.',
+      title: 'Your package',
+      from: 'From',
+      note: 'The final price depends on what your brand needs, and on what we agree.',
+      ask: 'Ask for an analysis of your brand',
+      how: [
+        { title: 'Analysis', text: 'We look at where your brand stands and what it needs to grow.' },
+        { title: 'Agreement', text: 'Together we set the work: reels, posts, page management and ads.' },
+        { title: 'Price', text: 'It follows the work, and we agree on it before we start.' },
+      ],
+    },
+    faq: {
+      h2: 'Questions people ask before we start.',
+      ask: 'Not here? Ask us on WhatsApp',
+      answers: {
+        1: (from) => `A package is a full plan we build after analysing your brand: reels, page management, posts and ads as it needs, starting from ${from} EGP. Single services are for when you need just one thing.`,
+      },
+    },
+    contact: {
+      h2: 'Link your brand to us.',
+      sub: 'Add your name and your brand, and pick what you need. The message writes itself as you go.',
+      you: 'Your brand',
+      us: 'reel line',
+      linked: 'Linked. All that is left is to press send.',
+    },
+    footer: { top: 'Back to top' },
   },
 };
 

@@ -7,20 +7,26 @@ import { useLang } from './i18n.jsx';
 // The reduced page must be complete: nothing plays by itself, pinned scenes become rows or steps.
 const KEY = 'reelline-motion';
 
+// A page can lock its default (the reel line site does: its owner wants motion on, always): then nothing stored
+// earlier changes it, and only the address of this very visit (?motion=reduced) can ask for the reduced page.
+let locked = false;
+
 function override() {
   const q = new URLSearchParams(window.location.search).get('motion');
   if (q === 'full' || q === 'reduced') {
-    try { localStorage.setItem(KEY, q); } catch { /* storage unavailable */ }
+    if (!locked) try { localStorage.setItem(KEY, q); } catch { /* storage unavailable */ }
     return q;
   }
+  if (locked) return null;
   try { return localStorage.getItem(KEY); } catch { return null; }
 }
 
 export const osPrefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let pageDefault = null;
-export function setMotionDefault(level) {
+export function setMotionDefault(level, { lock = false } = {}) {
   pageDefault = level === 'full' || level === 'reduced' ? level : null;
+  locked = Boolean(lock && pageDefault);
 }
 
 export function isMotionReduced() {

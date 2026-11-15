@@ -1,15 +1,20 @@
 import { createRoot } from 'react-dom/client';
 import { applyMotionClass, setMotionDefault } from '@shared/motion.jsx';
 import { applyLang } from '@shared/i18n.jsx';
+import { codecReady } from '@shared/video.js';
 import '@shared/base.css';
-import '../v1/styles.css';
+import './styles.css';
 import './extra.css';
 import App from './App.jsx';
 
-// Design 1.1 is Design 1 plus two sections: its styles are Design 1's own, then the two sections' (extra.css).
-// Full motion on every device by default (the studio's standing wish); the visitor can reduce it in the footer or the menu.
-setMotionDefault('full');
+// Motion is always on here, on every device: the agency's owner asked for it. Nothing stored earlier and no system
+// setting switches it off; only the address of a visit (?motion=reduced) can ask for the reduced page.
+setMotionDefault('full', { lock: true });
 applyMotionClass();
 applyLang();
+
+// which video format this device plays well is known before anything is drawn (it takes a few milliseconds), so the
+// loading screen fetches the very files the page will play
+await codecReady;
 
 createRoot(document.getElementById('root')).render(<App />);

@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { getLenis } from './scroll.jsx';
 import { useLang } from './i18n.jsx';
 import { holdClip, startClip, videoUrl } from './video.js';
+import { cachedUrl } from './preload.js';
 
 // The agency's own footage is the only colour on these pages, so it is handled with care:
 // a clip is muted, loops, and is only loaded and played while its parent says `playing`.
@@ -9,7 +10,8 @@ import { holdClip, startClip, videoUrl } from './video.js';
 // and in reduced motion a clip never starts by itself.
 // How it is served and started is in video.js: the lightest format the device
 // plays well, clips starting one at a time, a refused autoplay retried on the next tap, the poster underneath
-// (iPhones draw nothing for a <video> without a source), and everything behind the full player holding still.
+// (iPhones draw nothing for a <video> without a source), everything behind the full player holding still, and a clip
+// that the loading screen already downloaded (preload.js) starting from memory.
 
 // true while the full player is open, so the loops behind it hold still
 const WatchingCtx = createContext(false);
@@ -22,10 +24,10 @@ export function Reel({ item, playing = false, size = 'tile', className = '', vid
   const watching = useWatching();
   const base = item[size] || item.loop;
   // the file is requested only once it is first needed, and its address is fixed then (format included)
-  const [src, setSrc] = useState(() => (playing ? { base, url: videoUrl(base) } : null));
+  const [src, setSrc] = useState(() => (playing ? { base, url: cachedUrl(videoUrl(base)) } : null));
   useEffect(() => {
-    if (src && src.base !== base) setSrc(playing ? { base, url: videoUrl(base) } : null);
-    else if (playing && !src) setSrc({ base, url: videoUrl(base) });
+    if (src && src.base !== base) setSrc(playing ? { base, url: cachedUrl(videoUrl(base)) } : null);
+    else if (playing && !src) setSrc({ base, url: cachedUrl(videoUrl(base)) });
   }, [playing, base, src]);
   useEffect(() => {
     const v = ref.current;

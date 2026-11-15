@@ -2,45 +2,22 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { isMotionReduced } from '@shared/motion.jsx';
 import { useLang } from '@shared/i18n.jsx';
 import { Reel, useReelModal } from '@shared/media.jsx';
-import { egp, maxSaving, packages, photos, prices, reels, services, webFeatured, webMore } from '@shared/content.js';
+import { egp, photos, prices, services, webFeatured, webMore } from '@shared/content.js';
+import { packageFrom } from './offer.js';
 import { jump, useInView, useRunway } from '@shared/scroll.jsx';
-
-// ---------------------------------------------------------------- the name: Reel. Real. Line.
-// Three frames that close up into a chain when the section arrives (already closed when motion is reduced).
-export function Name() {
-  const { t, c } = useLang();
-  const ref = useRef(null);
-  const seen = useInView(ref, { once: true, threshold: 0.35 });
-  return (
-    <section className="scr name" id="name" aria-labelledby="name-h">
-      <header className="head">
-        <h2 id="name-h">{c.name.h2}</h2>
-        <p>{t.about}</p>
-      </header>
-      <ol className={`chain3 ${seen ? 'is-in' : ''}`} ref={ref}>
-        {t.naming.map((n) => (
-          <li key={n.word}>
-            <strong className="ltr" lang="en">{n.word}</strong>
-            <span>{n.text}</span>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
 
 // ---------------------------------------------------------------- services: a held scene that moves sideways
 const SVC_MEDIA = { page: 'zatWall', posts: 'zatCup' };
 const WEB_REEL = { id: 'webReel', poster: '/media/web-reel.webp', tile: '/media/web-reel-tile.mp4', loop: '/media/web-reel.mp4' };
 
 function ServiceCard({ s, on, live }) {
-  const { t } = useLang();
-  const it = t.services[s.id];
-  const save = egp(maxSaving());
-  const big = { reels: egp(prices.reel), page: egp(prices.page), posts: egp(prices.posts5), packages: egp(packages[0].price) }[s.id];
+  const { t, c } = useLang();
+  // the packages card carries this page's own offer (./offer.js): its wording is in this page's copy
+  const it = s.id === 'packages' ? { ...t.services.packages, ...c.services.pack } : t.services[s.id];
+  const big = { reels: egp(prices.reel), page: egp(prices.page), posts: egp(prices.posts5), packages: egp(packageFrom) }[s.id];
   const tag =
     s.price === 'onRequest' ? t.priceTags.onRequest
-    : s.price === 'packages' ? t.priceTags.packages(egp(packages[0].price))
+    : s.price === 'packages' ? t.priceTags.packages(egp(packageFrom))
     : t.priceTags[s.price](egp(prices[s.price]));
   return (
     <li className={`svc svc--${s.id} ${on ? 'is-on' : ''}`}>
@@ -52,7 +29,7 @@ function ServiceCard({ s, on, live }) {
       <div className="svc__body">
         <span className="svc__no ltr">{s.no}</span>
         <h3>{it.title}</h3>
-        <p>{typeof it.text === 'function' ? it.text(save) : it.text}</p>
+        <p>{it.text}</p>
         <ul className="tags">{it.tags.map((x) => <li key={x}>{x}</li>)}</ul>
         <p className="svc__price">{tag}</p>
         {s.href && <a className="more" href={s.href} onClick={jump}>{it.cta}</a>}
@@ -128,46 +105,6 @@ export function Services() {
           </ol>
         </div>
       </div>
-    </section>
-  );
-}
-
-// ---------------------------------------------------------------- the work: the only colour on the page
-function WorkCard({ r, i }) {
-  const { t, c } = useLang();
-  const reduced = isMotionReduced();
-  const open = useReelModal();
-  const ref = useRef(null);
-  const onScreen = useInView(ref, { threshold: 0.6 });
-  const [woke, setWoke] = useState(reduced);
-  useEffect(() => {
-    if (onScreen) setWoke(true);
-  }, [onScreen]);
-  const meta = t.reels[r.id];
-  return (
-    <li className={`shot ${woke ? 'is-woke' : ''}`} style={{ '--i': i }}>
-      <button type="button" ref={ref} onClick={() => open(r, `${meta.title} · ${meta.note}`)} aria-label={c.work.open(meta.title)}>
-        <span className="shot__frame"><Reel item={r} playing={!reduced && onScreen} /></span>
-        <span className="shot__cap">
-          <strong>{meta.title}</strong>
-          <span>{meta.note}</span>
-        </span>
-      </button>
-    </li>
-  );
-}
-
-export function Work() {
-  const { t, c } = useLang();
-  return (
-    <section className="scr work" id="work" aria-labelledby="work-h">
-      <header className="head">
-        <h2 id="work-h">{c.work.h2}</h2>
-        <p>{t.workNote}</p>
-      </header>
-      <ul className="work__row">
-        {reels.map((r, i) => <WorkCard key={r.id} r={r} i={i} />)}
-      </ul>
     </section>
   );
 }

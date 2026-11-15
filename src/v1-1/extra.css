@@ -1,4 +1,4 @@
-/* reel line — Design 1.1: the two sections brought in from Design 2, set in Design 1's own language:
+/* reel line: the line, the cut, the loading screen, the steps' held scene and the package offer, in the page's language:
    the paper page, graphite frames with the weight of the mark, charcoal type, and a paper gap ("halo") round
    whatever sits in front. Timelines run left to right in both languages, as in any editing program. */
 
@@ -46,7 +46,7 @@
 .ln__cue i { display: block; width: 22px; height: 2px; background: currentColor; position: relative; }
 .ln__cue i::after { content: ''; position: absolute; left: 0; top: -4px; width: 8px; height: 8px; border-top: 2px solid currentColor; border-left: 2px solid currentColor; rotate: -45deg; }
 .ln__cue.is-off { opacity: 0; visibility: hidden; }
-/* the three words of the name, under the strip (they were Design 1's three frames) */
+/* the three words of the name, under the strip */
 .ln__names { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px clamp(16px, 3vw, 48px); margin: 0; }
 .ln__names > div { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 12px; padding-block-start: 8px; border-block-start: 2px solid var(--graphite); }
 .ln__names dt { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(1.25rem, 1.8vw, 1.7rem); line-height: 1.2; letter-spacing: -0.03em; }
@@ -65,7 +65,7 @@
   .ln__names dd { font-size: 0.9375rem; }
 }
 
-/* ------------------------------------------------------------ the cut: a held scene (Design 2's markup, Design 1's look) */
+/* ------------------------------------------------------------ the cut: a held scene */
 .cut.is-held { height: calc((100svh - var(--hh)) * 4); }
 .cut__stage {
   --ph: 0; --k: 4;
@@ -140,4 +140,57 @@
   .clip__now b { font-size: 1.25rem; }
   .clip .btn { max-width: 100%; padding: 6px 12px; white-space: normal; text-align: center; line-height: 1.25; }
   .tl__name span { display: none; }
+}
+
+/* ------------------------------------------------------------ the loading screen
+   Paper, the kit's logo reveal in the middle (driven by the real loading), a counter and a line that fills. */
+.loader { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--paper); color: var(--charcoal); will-change: transform; }
+.loader .logo-motion { width: min(64vw, 430px); height: auto; }
+.loader__say { position: absolute; inset-inline-start: var(--pad); inset-block-end: clamp(20px, 4.4svh, 44px); font-weight: 600; color: var(--graphite); }
+.loader__count { position: absolute; inset-inline-end: var(--pad); inset-block-end: clamp(10px, 2.6svh, 28px); font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(4.4rem, 13vw, 10.5rem); line-height: 0.9; letter-spacing: -0.045em; }
+.loader__bar { position: absolute; inset-inline: 0; inset-block-end: 0; height: var(--fw); background: var(--graphite); transform: scaleX(0); transform-origin: left; }
+[dir='rtl'] .loader__bar { transform-origin: right; }
+
+/* ------------------------------------------------------------ process: the scroll moves from one frame to the next */
+/* the section is the runway now: its stage must start at its top (align-content also centres a plain block) */
+.process { align-content: normal; }
+.process.is-held { height: calc((100svh - var(--hh)) * (1 + (var(--steps) - 1) * 0.6)); }
+.process.is-held .process__stage { position: sticky; inset-block-start: var(--hh); height: calc(100svh - var(--hh)); min-height: 0; }
+.process__stage { align-content: center; }
+.process__bar { position: absolute; inset-inline: var(--pad); inset-block-end: clamp(10px, 2.2svh, 20px); height: 2px; background: var(--silver); }
+.process__bar::after { content: ''; position: absolute; inset: 0; background: var(--charcoal); transform: scaleX(var(--pp, 0)); transform-origin: left; }
+[dir='rtl'] .process__bar::after { transform-origin: right; }
+.process.is-flat .process__bar { display: none; }
+@media (max-width: 759px) {
+  .process .hint { display: none; }
+}
+
+/* ------------------------------------------------------------ the package: from a price, set by analysis and agreement */
+.pricing__body--offer { grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.8fr); }
+.offer { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); align-items: center; column-gap: clamp(18px, 2.6vw, 44px); padding: clamp(16px, 1.9vw, 30px); border: var(--fw) solid var(--graphite); background: var(--white); }
+.offer__a { display: grid; gap: 8px; justify-items: start; min-width: 0; }
+.offer__price { font-size: 1.125rem; font-weight: 600; white-space: nowrap; }
+.offer__price b { font-size: clamp(2.6rem, 5vw, 4.6rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; }
+.offer__note { color: var(--graphite); max-width: 24em; }
+.offer .btn { margin-block-start: 6px; white-space: normal; text-align: center; }
+.offer__how { display: grid; margin: 0; padding: 0; list-style: none; }
+.offer__how li { display: grid; grid-template-columns: 2.4em minmax(0, 1fr); column-gap: 8px; padding-block: 10px; border-block-start: 1px solid var(--silver); }
+.offer__how li:last-child { border-block-end: 1px solid var(--silver); }
+.offer__how span { grid-row: 1 / span 2; font-weight: 800; color: var(--steel); }
+.offer__how b { font-weight: 600; font-size: 1.0625rem; }
+.offer__how p { color: var(--graphite); }
+@media (max-width: 1099px) {
+  .pricing__body--offer { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 759px) {
+  .offer { grid-template-columns: minmax(0, 1fr); row-gap: 8px; padding: 12px 14px; border-width: 5px; }
+  .offer__a { gap: 4px; }
+  .offer__price b { font-size: 2.6rem; }
+  .offer .btn { width: 100%; min-height: 48px; }
+  /* on a phone the three lines are three short cells in a row: number and title (the note above says the rest) */
+  .offer__how { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 8px; }
+  .offer__how li, .offer__how li:last-child { grid-template-columns: minmax(0, 1fr); padding-block: 6px; border-block-end: 1px solid var(--silver); }
+  .offer__how span { grid-row: auto; font-size: 0.9375rem; }
+  .offer__how b { font-size: 1rem; }
+  .offer__how p { display: none; }
 }

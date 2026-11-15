@@ -5,20 +5,22 @@ import { useLang } from '@shared/i18n.jsx';
 import { Reel } from '@shared/media.jsx';
 import { reelOf } from './reels.js';
 import { useInView, useMedia } from '@shared/scroll.jsx';
-import { clamp, useHDrag } from '../v2/line.js';
+import { clamp, useHDrag } from './line.js';
 
-// Design 1.1: the line between real and reel (Design 2's first screen), set inside Design 1 as "the name by hand".
+// The line between real and reel: the name, by hand.
 // A strip of the team's reels in one graphite frame, and one line across it. Left of the line is "real": the grey
 // still frame of each reel. Right of it is "reel": the same reels in colour, playing. The visitor drags the line
 // (anywhere on the strip), taps a spot, or uses the arrow keys on the handle. Under the strip, the three words of
-// the name from the brand guide (they were Design 1's three frames).
+// the name from the brand guide.
 // The physical order never mirrors (real left, reel right): the name is English. `--x` on the stage is the line's
 // place, 0 (far left: all reel) to 100 (far right: all real).
-const ROWS = {
+export const ROWS = {
   wide: ['near', 'santos', 'ghazala', 'talk', 'vega', 'mamoBite'],
   mid: ['near', 'ghazala', 'talk', 'vega'],
   phone: ['ghazala', 'vega'],
 };
+// which of the three the screen is now (the loading screen asks, before anything is drawn)
+export const sizeNow = () => (window.matchMedia('(max-width: 759px)').matches ? 'phone' : window.matchMedia('(max-width: 1099px)').matches ? 'mid' : 'wide');
 const START = { wide: 60, mid: 60, phone: 65 };
 const SWAY = { wide: 1.7, mid: 2.2, phone: 3 }; // how far the line sways (in % of the strip) until the first touch
 const STEP = 5;

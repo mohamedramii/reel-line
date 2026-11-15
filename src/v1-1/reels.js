@@ -1,9 +1,9 @@
-// Design 1.1's six reels: three new ones (Ghazala, Near Cafe, De La Vega, added 2026-11-15) and three of the
+// The page's six reels: three new ones (Ghazala, Near Cafe, De La Vega, added 2026-11-15) and three of the
 // shared ones. They took the places of the zat reel (the only one with no full version with sound), the second
 // Mamo Fried Chicken reel (the same brand twice) and the Alexandria places reel.
 // `tile` is a 360p cut of the first seven of the reel's best twelve seconds, `loop` those twelve at 720p,
 // `full` the whole reel with sound. The cut also has a scrub clip and a filmstrip of each.
-// The first screen keeps the shared Santos reel (it is Design 1's own code).
+// The first screen plays the Santos reel.
 import { reelById } from '@shared/content.js';
 
 const fresh = (id, focus = '50% 50%') => ({
