@@ -1,0 +1,23 @@
+{
+  "name": "reel-line",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "reel line: the website of a full-service marketing agency in Alexandria (reels, page management, posts, sponsored ads, websites and apps).",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "gsap": "^3.15.1",
+    "lenis": "^1.3.27",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
+    "vite": "^8.3.5"
+  }
+}

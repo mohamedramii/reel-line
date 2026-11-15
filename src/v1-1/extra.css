@@ -1,0 +1,143 @@
+/* reel line — Design 1.1: the two sections brought in from Design 2, set in Design 1's own language:
+   the paper page, graphite frames with the weight of the mark, charcoal type, and a paper gap ("halo") round
+   whatever sits in front. Timelines run left to right in both languages, as in any editing program. */
+
+/* ------------------------------------------------------------ the line between real and reel */
+.ln__stage {
+  --x: 60; --n: 6; --wf: clamp(2.6rem, 4.6vw, 4.4rem);
+  /* as tall as the screen leaves, and never taller than a 9:16 frame one cell wide */
+  --sh: min(calc(100svh - var(--hh) - 19.5rem), calc((100vw - 2 * var(--pad)) / var(--n) * 1.7778));
+  position: relative; height: var(--sh); min-height: 150px; margin-block-end: 34px; /* the handle hangs under the frame */
+  box-shadow: 0 0 0 var(--fw) var(--graphite); overflow-x: clip;
+  direction: ltr; touch-action: pan-y; cursor: ew-resize; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.ln__strip { position: absolute; inset: 0; overflow: hidden; background: var(--graphite); }
+.ln__row { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 4px; background: var(--graphite); }
+.ln__row > * { width: 100%; height: 100%; min-width: 0; min-height: 0; object-fit: cover; pointer-events: none; }
+.ln__row--real img { filter: grayscale(1) contrast(0.9) brightness(1.02); } /* set once, never animated */
+.ln__row--reel { clip-path: inset(0 0 0 calc(var(--x) * 1%)); }
+/* the line: charcoal with a paper edge, so it reads on any footage and on the graphite frame */
+.ln__line {
+  position: absolute; z-index: 2; inset-block: calc(var(--fw) * -1 - 8px); left: clamp(3px, calc(var(--x) * 1%), calc(100% - 3px)); width: 4px; margin-left: -2px;
+  background: var(--charcoal); box-shadow: 0 0 0 2px var(--paper); pointer-events: none;
+}
+/* the two words ride with the line, on paper plates like the caption plate of the first screen */
+.ln__words { position: absolute; z-index: 1; top: 0; left: calc(var(--x) * 1%); width: 0; height: 0; pointer-events: none; }
+.ln__word { position: absolute; top: 0; display: grid; padding: 4px 14px 8px; background: var(--paper); white-space: nowrap; }
+.ln__word--real { right: 4px; justify-items: end; }
+.ln__word--reel { left: 4px; justify-items: start; }
+.ln__word b { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: var(--wf); line-height: 1.04; letter-spacing: -0.035em; color: var(--charcoal); }
+.ln__word span { font-size: clamp(1rem, 1.2vw, 1.125rem); font-weight: 500; line-height: 1.5; color: var(--graphite); }
+/* the handle: a charcoal block with the paper gap of a front frame, half on the footage and half under it */
+.ln__grab {
+  position: absolute; z-index: 3; bottom: -30px; left: clamp(28px, calc(var(--x) * 1%), calc(100% - 28px)); width: 56px; height: 56px; margin-left: -28px;
+  display: flex; align-items: center; justify-content: center; gap: 12px; background: var(--charcoal); color: var(--paper);
+  box-shadow: 0 0 0 var(--halo) var(--paper); touch-action: none;
+}
+.ln__grab i { display: block; width: 10px; height: 10px; border-top: 2.5px solid currentColor; border-left: 2.5px solid currentColor; rotate: -45deg; }
+.ln__grab i + i { rotate: 135deg; }
+.ln__grab:focus-visible { outline-offset: calc(var(--halo) + 3px); }
+.ln__cue {
+  position: absolute; z-index: 3; top: calc(100% + var(--fw) + 2px); right: min(calc((100 - var(--x)) * 1% + 28px + var(--halo) + 8px), calc(100% - 10rem));
+  display: flex; align-items: center; gap: 10px; height: 26px; color: var(--charcoal); font-weight: 600; font-size: 0.9375rem; line-height: 1; white-space: nowrap; pointer-events: none;
+  transition: opacity 0.25s ease-out, visibility 0s linear 0.25s;
+}
+[dir='rtl'] .ln__cue { direction: rtl; flex-direction: row-reverse; }
+.ln__cue i { display: block; width: 22px; height: 2px; background: currentColor; position: relative; }
+.ln__cue i::after { content: ''; position: absolute; left: 0; top: -4px; width: 8px; height: 8px; border-top: 2px solid currentColor; border-left: 2px solid currentColor; rotate: -45deg; }
+.ln__cue.is-off { opacity: 0; visibility: hidden; }
+/* the three words of the name, under the strip (they were Design 1's three frames) */
+.ln__names { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px clamp(16px, 3vw, 48px); margin: 0; }
+.ln__names > div { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 12px; padding-block-start: 8px; border-block-start: 2px solid var(--graphite); }
+.ln__names dt { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(1.25rem, 1.8vw, 1.7rem); line-height: 1.2; letter-spacing: -0.03em; }
+.ln__names dd { margin: 0; color: var(--graphite); font-size: clamp(1rem, 1.1vw, 1.0625rem); line-height: 1.6; }
+@media (max-width: 1099px) {
+  .ln__stage { --sh: min(calc(100svh - var(--hh) - 22rem), calc((100vw - 2 * var(--pad)) / var(--n) * 1.7778)); }
+  .ln__names { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .ln__names > div { grid-template-columns: 4.2rem minmax(0, 1fr); padding-block-start: 4px; border-block-start-width: 1px; }
+}
+@media (max-width: 759px) {
+  .ln { gap: 12px; }
+  .ln__stage { --x: 65; --wf: 2.6rem; --sh: min(calc(100svh - var(--hh) - 27rem), calc((100vw - 2 * var(--pad)) / var(--n) * 1.7778)); margin-block-start: 8px; }
+  .ln__line { inset-block: calc(var(--fw) * -1 - 4px); }
+  .ln__word { padding: 3px 10px 6px; }
+  .ln__names dt { font-size: 1.25rem; }
+  .ln__names dd { font-size: 0.9375rem; }
+}
+
+/* ------------------------------------------------------------ the cut: a held scene (Design 2's markup, Design 1's look) */
+.cut.is-held { height: calc((100svh - var(--hh)) * 4); }
+.cut__stage {
+  --ph: 0; --k: 4;
+  --th: calc((100vw - 2 * var(--pad)) / (6 * var(--k)) * 1.7778 + 2px); /* film height: a 9:16 frame one cell wide */
+  --py: clamp(16px, 3svh, 28px);
+  --gap: clamp(14px, 2.8svh, 26px);
+  --tl: calc(var(--th) + 46px);
+  /* the viewer takes the height the timeline leaves, but never more than a third of the width */
+  --vh: min(calc(100svh - var(--hh) - 2 * var(--py) - var(--tl) - var(--gap) - 2 * var(--fw) - 6px), calc((100vw - 2 * var(--pad)) * 0.34 * 1.7778));
+  position: sticky; inset-block-start: var(--hh); height: calc(100svh - var(--hh)); min-height: 0; padding-block: calc(var(--py) + var(--fw)) var(--py);
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-rows: var(--vh) var(--tl);
+  grid-template-areas: 'head view clip' 'tl tl tl';
+  align-content: start; gap: calc(var(--gap) + var(--fw) + 6px) clamp(24px, 4vw, 64px);
+}
+.is-flat .cut__stage { position: relative; inset-block-start: auto; }
+.cut__head { grid-area: head; align-self: center; }
+/* the viewer is a graphite frame, like every frame on this page */
+.viewer { grid-area: view; position: relative; height: var(--vh); width: calc(var(--vh) * 0.5625); background: var(--black); box-shadow: 0 0 0 var(--fw) var(--graphite); overflow: hidden; overflow: clip; }
+.viewer video, .viewer img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.viewer video { visibility: hidden; }
+.viewer video.is-on { visibility: visible; }
+.viewer__play { position: absolute; inset: 0; display: grid; place-items: center; }
+.viewer__play i { display: grid; place-items: center; width: 72px; height: 72px; background: var(--paper); transition: scale 0.18s ease-out; }
+.viewer__play i::after { content: ''; margin-left: 6px; border-style: solid; border-width: 13px 0 13px 21px; border-color: transparent transparent transparent var(--charcoal); }
+.viewer__play:hover i { scale: 1.06; }
+.clip { grid-area: clip; align-self: center; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; justify-items: start; min-width: 0; max-width: 23rem; }
+.clip__no { display: inline-flex; align-items: baseline; gap: 10px; font-weight: 600; color: var(--steel); }
+.clip__no b { font-size: clamp(3rem, 5.6vw, 5.2rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; color: var(--charcoal); }
+.clip h3 { font-size: clamp(1.3rem, 2.1vw, 2rem); }
+.clip__note { color: var(--graphite); }
+.clip__tc { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 14px; width: 100%; margin-block: 10px 12px; padding-block: 8px; border-block: 1px solid var(--silver); font-size: 0.9375rem; color: var(--graphite); }
+.clip__now { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; }
+.clip__now i { font-style: normal; }
+.clip__now b { min-width: 4.4em; font-weight: 600; font-size: 1.5rem; color: var(--charcoal); }
+
+.tl { grid-area: tl; position: relative; direction: ltr; touch-action: pan-y; cursor: ew-resize; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+.is-flat .tl { cursor: auto; }
+.tl__blocks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.tl__blocks li { min-width: 0; }
+.is-held .tl__blocks li { --loc: clamp(0, calc(var(--ph) * 6 - var(--i)), 1); }
+.is-flat .tl__blocks li { --loc: 0; }
+.is-flat .tl__blocks li.is-on { --loc: 1; }
+.tl__blocks button { display: grid; width: 100%; min-width: 0; text-align: left; cursor: inherit; }
+.is-flat .tl__blocks button { cursor: pointer; }
+.tl__name { display: flex; align-items: center; gap: 8px; height: 34px; padding-inline: 4px; overflow: hidden; white-space: nowrap; font-size: 0.9375rem; font-weight: 500; color: var(--steel); }
+.tl__name b { font-weight: 800; }
+.tl__blocks li.is-on .tl__name { color: var(--charcoal); }
+.tl__film { position: relative; display: block; height: var(--th); overflow: hidden; background: var(--graphite); }
+.tl__raw, .tl__done { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--k), minmax(0, 1fr)); }
+.tl__raw { filter: grayscale(1) contrast(0.9) brightness(0.98); }
+.tl__done { clip-path: inset(0 calc((1 - var(--loc)) * 100%) 0 0); }
+.tl__film i { background-image: var(--strip); background-repeat: no-repeat; background-size: auto 100%; background-position: calc(50% + (3.5 - var(--f)) * var(--th) * 0.5625) 0; }
+.tl__ticks { display: flex; align-items: flex-start; height: 12px; }
+.tl__ticks i { flex: 1; height: 5px; border-left: 1px solid var(--silver); }
+.tl__ticks i:first-child { height: 11px; border-left-color: var(--graphite); }
+.ph { position: absolute; z-index: 2; top: -8px; bottom: 0; left: calc(var(--ph) * 100%); width: 4px; margin-left: -2px; background: var(--charcoal); box-shadow: 0 0 0 2px var(--paper); pointer-events: none; }
+.ph i { position: absolute; top: 0; left: 50%; width: 16px; height: 16px; margin-left: -8px; background: var(--charcoal); box-shadow: 0 0 0 2px var(--paper); }
+@media (max-width: 759px), (max-width: 1099px) and (orientation: portrait) {
+  /* a tall screen: the heading goes on top, the viewer and its clip sit side by side */
+  .cut__stage {
+    --vh: min(calc(100svh - var(--hh) - 2 * var(--py) - var(--tl) - 2 * var(--gap) - 3 * var(--fw) - 12px - 7.4rem), calc((100vw - 2 * var(--pad)) * 0.56 * 1.7778));
+    grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto var(--vh) var(--tl);
+    grid-template-areas: 'head head' 'view clip' 'tl tl';
+    align-content: center; column-gap: clamp(18px, 4.6vw, 44px); padding-block: var(--py);
+  }
+  .cut__head { align-self: start; gap: 4px; }
+  .viewer { margin-inline-start: var(--fw); margin-block: var(--fw) 0; }
+}
+@media (max-width: 759px) {
+  .cut__stage { --th: 76px; }
+  .clip__no b { font-size: 2.8rem; }
+  .clip__now b { font-size: 1.25rem; }
+  .clip .btn { max-width: 100%; padding: 6px 12px; white-space: normal; text-align: center; line-height: 1.25; }
+  .tl__name span { display: none; }
+}
