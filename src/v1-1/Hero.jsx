@@ -122,7 +122,7 @@ export default function Hero() {
             <span>{h.thinkAr}</span>
           </div>
           <div className="fr fr--lower" {...frameProps('lower')}>
-            <Reel key={phone ? 'tile' : 'loop'} item={REEL} size={phone ? 'tile' : 'loop'} playing={linked && onScreen && !reduced} />
+            <Reel key={phone ? 'tile' : 'loop'} item={REEL} size={phone ? 'tile' : 'loop'} still playing={linked && onScreen && !reduced} />
             <span className="fr__cap">
               <strong className="ltr" lang="en">{h.reel}</strong>
               <span>{h.reelAr}</span>

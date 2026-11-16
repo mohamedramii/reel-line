@@ -129,7 +129,9 @@ export default function Line() {
           </div>
           <div className="ln__row ln__row--reel">
             {cells.map((r, i) => (
-              <Reel key={r.id} item={r} playing={!reduced && onScreen && i >= real} />
+              <span className="ln__cell" key={r.id}>
+                <Reel item={r} still playing={!reduced && onScreen && i >= real} />
+              </span>
             ))}
           </div>
           <div className="ln__words">

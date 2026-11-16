@@ -18,7 +18,10 @@ const WatchingCtx = createContext(false);
 export const useWatching = () => useContext(WatchingCtx);
 
 // item: an entry of `reels`, `webFeatured` or `webMore` from content.js.  size: 'tile' (small 7s cut) or 'loop'.
-export function Reel({ item, playing = false, size = 'tile', className = '', videoRef, label, style, ...rest }) {
+// still: the clip's still picture is drawn as a real <img> under it, and the clip fades in over it once its frames
+// are really playing (an iPhone draws nothing for a <video> that has no source yet).
+// The picture and the clip then lie one over the other, so their parent must place `.reel` absolutely (inset 0).
+export function Reel({ item, playing = false, size = 'tile', still = false, className = '', videoRef, label, style, ...rest }) {
   const own = useRef(null);
   const ref = videoRef || own;
   const watching = useWatching();
@@ -29,6 +32,11 @@ export function Reel({ item, playing = false, size = 'tile', className = '', vid
     if (src && src.base !== base) setSrc(playing ? { base, url: cachedUrl(videoUrl(base)) } : null);
     else if (playing && !src) setSrc({ base, url: cachedUrl(videoUrl(base)) });
   }, [playing, base, src]);
+  // with `still`: are the clip's own frames on screen yet? (until then the picture under it is what shows)
+  const url = src ? src.url : undefined;
+  const [shown, setShown] = useState(false);
+  useEffect(() => setShown(false), [url]);
+  const focus = item.focus ? { objectPosition: item.focus } : null;
   useEffect(() => {
     const v = ref.current;
     if (!v) return undefined;
@@ -44,11 +52,11 @@ export function Reel({ item, playing = false, size = 'tile', className = '', vid
     if (live) startClip(v);
     else holdClip(v);
   }, [live, ref, src]);
-  return (
+  const clip = (
     <video
       ref={ref}
-      className={`reel ${className}`}
-      src={src ? src.url : undefined}
+      className={`reel ${still ? `reel--over ${shown ? 'is-shown' : ''}` : ''} ${className}`}
+      src={url}
       poster={item.poster}
       muted
       loop
@@ -58,9 +66,17 @@ export function Reel({ item, playing = false, size = 'tile', className = '', vid
       tabIndex={-1}
       aria-label={label}
       aria-hidden={label ? undefined : true}
-      style={{ backgroundImage: `url(${item.poster})`, backgroundSize: 'cover', backgroundPosition: item.focus || '50% 50%', ...(item.focus ? { objectPosition: item.focus } : null), ...style }}
+      onPlaying={still ? () => setShown(true) : undefined}
+      style={{ backgroundImage: `url(${item.poster})`, backgroundSize: 'cover', backgroundPosition: item.focus || '50% 50%', ...focus, ...style }}
       {...rest}
     />
+  );
+  if (!still) return clip;
+  return (
+    <>
+      <img className={`reel reel--still ${className}`} src={item.poster} alt="" aria-hidden="true" decoding="async" draggable="false" style={focus || undefined} />
+      {clip}
+    </>
   );
 }
 

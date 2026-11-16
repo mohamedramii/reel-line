@@ -4,11 +4,11 @@ import { useLang } from '@shared/i18n.jsx';
 import { Reel, useReelModal } from '@shared/media.jsx';
 import { egp, photos, prices, services, webFeatured, webMore } from '@shared/content.js';
 import { packageFrom } from './offer.js';
-import { jump, useInView, useRunway } from '@shared/scroll.jsx';
+import { webReel } from './reels.js';
+import { jump, useInView, useMedia, useRunway } from '@shared/scroll.jsx';
 
 // ---------------------------------------------------------------- services: a held scene that moves sideways
 const SVC_MEDIA = { page: 'zatWall', posts: 'zatCup' };
-const WEB_REEL = { id: 'webReel', poster: '/media/web-reel.webp', tile: '/media/web-reel-tile.mp4', loop: '/media/web-reel.mp4' };
 
 function ServiceCard({ s, on, live }) {
   const { t, c } = useLang();
@@ -23,7 +23,7 @@ function ServiceCard({ s, on, live }) {
     <li className={`svc svc--${s.id} ${on ? 'is-on' : ''}`}>
       <div className="svc__back" aria-hidden="true">
         {SVC_MEDIA[s.id] && <img src={photos[SVC_MEDIA[s.id]]} alt="" loading="lazy" decoding="async" />}
-        {s.id === 'web' && <Reel item={WEB_REEL} playing={live && on} />}
+        {s.id === 'web' && <Reel item={webReel} still playing={live && on} />}
         {!SVC_MEDIA[s.id] && s.id !== 'web' && <b className="svc__fig ltr">{big || '?'}</b>}
       </div>
       <div className="svc__body">
@@ -115,7 +115,11 @@ export function Digital() {
   const reduced = isMotionReduced();
   const open = useReelModal();
   const ref = useRef(null);
-  const onScreen = useInView(ref, { threshold: 0.4 });
+  // the recording starts a little before it is on screen (200px) and holds further away, and a phone plays the
+  // short 360p cut here as everywhere else on the page
+  const onScreen = useInView(ref, { margin: '200px 0px', threshold: 0 });
+  const phone = useMedia('(max-width: 759px)');
+  const size = phone ? 'tile' : 'loop';
   const [pick, setPick] = useState(0);
   const item = webFeatured[pick];
   const p = t.digital.projects[item.id];
@@ -149,7 +153,7 @@ export function Digital() {
         </div>
         <div className="digital__show" id="dig-panel" role="tabpanel" aria-labelledby={`dig-tab-${item.id}`} ref={ref}>
           <button type="button" className="screen" onClick={() => open(item, item.name, true)} aria-label={c.digital.open(item.name)}>
-            <Reel key={item.id} item={item} size="loop" playing={!reduced && onScreen} />
+            <Reel key={`${item.id}-${size}`} item={item} size={size} still playing={!reduced && onScreen} />
             <span className="screen__bar ltr">{item.url}</span>
           </button>
           <p className="digital__text">{p.text}</p>

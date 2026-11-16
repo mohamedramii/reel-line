@@ -15,6 +15,9 @@
 .ln__row { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 4px; background: var(--graphite); }
 .ln__row > * { width: 100%; height: 100%; min-width: 0; min-height: 0; object-fit: cover; pointer-events: none; }
 .ln__row--real img { filter: grayscale(1) contrast(0.9) brightness(1.02); } /* set once, never animated */
+/* a cell of the reel row: the reel's still picture with its clip over it */
+.ln__cell { position: relative; overflow: hidden; }
+.ln__cell > .reel { position: absolute; inset: 0; }
 .ln__row--reel { clip-path: inset(0 0 0 calc(var(--x) * 1%)); }
 /* the line: charcoal with a paper edge, so it reads on any footage and on the graphite frame */
 .ln__line {
@@ -115,9 +118,13 @@
 .tl__blocks li.is-on .tl__name { color: var(--charcoal); }
 .tl__film { position: relative; display: block; height: var(--th); overflow: hidden; background: var(--graphite); }
 .tl__raw, .tl__done { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--k), minmax(0, 1fr)); }
-.tl__raw { filter: grayscale(1) contrast(0.9) brightness(0.98); }
+/* ahead of the line the film is grey, behind it in colour: two pictures of the same filmstrip, one over the other
+   (the grey one is a file of its own), and the colour one is cut off at the line. No CSS filter and no background
+   picture here: on iPhones a filter makes a layer of its own, and those layers went blank during the scroll. */
 .tl__done { clip-path: inset(0 calc((1 - var(--loc)) * 100%) 0 0); }
-.tl__film i { background-image: var(--strip); background-repeat: no-repeat; background-size: auto 100%; background-position: calc(50% + (3.5 - var(--f)) * var(--th) * 0.5625) 0; }
+.tl__film i { position: relative; overflow: hidden; }
+/* one frame of the filmstrip (8 side by side, each 9:16), centred in its cell */
+.tl__film img { position: absolute; top: 0; left: 50%; width: auto; max-width: none; height: 100%; translate: calc(-50% + (3.5 - var(--f)) * var(--th) * 0.5625) 0; pointer-events: none; -webkit-user-drag: none; }
 .tl__ticks { display: flex; align-items: flex-start; height: 12px; }
 .tl__ticks i { flex: 1; height: 5px; border-left: 1px solid var(--silver); }
 .tl__ticks i:first-child { height: 11px; border-left-color: var(--graphite); }

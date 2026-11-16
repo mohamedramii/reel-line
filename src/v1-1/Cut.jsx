@@ -12,7 +12,8 @@ import { pad2, useHDrag } from './line.js';
 // The page scroll moves the playhead across the track (the scroll is the single source of truth: dragging the
 // playhead or tapping a block only scrolls the page), and the viewer shows the very frame under the playhead by
 // setting video.currentTime on a "scrub" copy of the clip (a keyframe every 3 frames).
-// Behind the playhead the track is in colour, ahead of it grey: the reel is made as the line passes.
+// Behind the playhead the track is in colour, ahead of it grey: the reel is made as the line passes. Both are real
+// pictures of the filmstrip (a colour file and a grey file), the colour one cut off at the playhead.
 // Reduced motion: no runway and no scrubbing. A block selects its reel, the viewer shows its poster and a play button.
 // `--ph` on the stage is the playhead, 0..1 across the track. The timeline runs left to right in both languages.
 // a reel's title and one-line idea: this design's own for the new reels, the shared copy's for the others
@@ -22,6 +23,7 @@ const FPS = 24; // the clips' own frame rate
 const GUESS = 7; // seconds, until a clip reports its own length
 const scrubSrc = (r) => `/media/d2/${r.id}-scrub.mp4`;
 const stripSrc = (r) => `/img/d2-strip-${r.id}.webp`;
+const greySrc = (r) => `/img/d2-strip-${r.id}-grey.webp`; // the same filmstrip in grey, a picture of its own
 const TICKS = [0, 1, 2, 3, 4, 5, 6];
 // which of the strip's 8 frames a block shows, by how many fit: each stands for its share of the clip
 const FRAMES = { 4: [1, 3, 5, 7], 3: [1, 4, 7], 2: [2, 6] };
@@ -200,9 +202,11 @@ export default function Cut() {
                     <b className="ltr">{pad2(i + 1)}</b>
                     <span>{nameOf(t, c, r.id).title}</span>
                   </span>
-                  <span className="tl__film" style={{ '--strip': `url(${stripSrc(r)})` }} aria-hidden="true">
-                    <span className="tl__raw">{frames.map((f) => <i key={f} style={{ '--f': f }} />)}</span>
-                    <span className="tl__done">{frames.map((f) => <i key={f} style={{ '--f': f }} />)}</span>
+                  {/* real pictures, not backgrounds, and no CSS filter: the grey film is a file of its own. On iPhones
+                      the filtered blocks were layers of their own and went blank while the page was being scrolled. */}
+                  <span className="tl__film" aria-hidden="true">
+                    <span className="tl__raw">{frames.map((f) => <i key={f} style={{ '--f': f }}><img src={greySrc(r)} alt="" decoding="sync" draggable="false" /></i>)}</span>
+                    <span className="tl__done">{frames.map((f) => <i key={f} style={{ '--f': f }}><img src={stripSrc(r)} alt="" decoding="sync" draggable="false" /></i>)}</span>
                   </span>
                   <span className="tl__ticks" aria-hidden="true">{TICKS.map((x) => <i key={x} />)}</span>
                 </button>

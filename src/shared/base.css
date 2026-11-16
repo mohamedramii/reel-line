@@ -62,6 +62,11 @@ a { color: inherit; }
 .mark { display: block; overflow: visible; }
 
 .reel { display: block; width: 100%; height: 100%; object-fit: cover; background: var(--graphite); }
+/* A clip over its own still picture (Reel `still`): the picture is there from the first paint on every phone, and the
+   clip fades in over it once its frames are really playing. An animation, so it never fights a design's own transition. */
+.reel--over { opacity: 0; }
+.reel--over.is-shown { opacity: 1; animation: reel-in 0.5s ease-out; }
+@keyframes reel-in { from { opacity: 0; } }
 
 .lang-btn { min-width: 44px; min-height: 44px; padding: 0 12px; font-weight: 600; font-size: 0.9375rem; line-height: 1; }
 

@@ -4,7 +4,8 @@ import { isMotionReduced } from '@shared/motion.jsx';
 import { useLang } from '@shared/i18n.jsx';
 import { LogoMotion } from '@shared/brand.jsx';
 import { preloadVideos } from '@shared/preload.js';
-import { reels } from './reels.js';
+import { webFeatured } from '@shared/content.js';
+import { reels, webReel } from './reels.js';
 import { ROWS, sizeNow } from './Line.jsx';
 
 // The loading screen: while it runs, the first clips a visitor meets are downloaded and kept in memory, so they
@@ -28,8 +29,14 @@ function firstClips() {
   const hero = reels.find((r) => r.id === 'ghazala'); // the first screen's reel (see Hero.jsx)
   return [size === 'phone' ? hero.tile : hero.loop, ...ROWS[size].map((id) => reels.find((r) => r.id === id).tile)];
 }
-// What goes on downloading behind the open page: the six scrub clips of the cut, two screens further down.
-const laterClips = () => reels.map((r) => `/media/d2/${r.id}-scrub.mp4`);
+// What goes on downloading behind the open page, in the order the visitor meets it: the six scrub clips of the cut
+// (two screens further down), then the short clip behind the websites card and the screen recordings of the
+// websites section, in the size this screen plays them. So every clip on the page starts from memory.
+const laterClips = () => [
+  ...reels.map((r) => `/media/d2/${r.id}-scrub.mp4`),
+  webReel.tile,
+  ...webFeatured.map((w) => (sizeNow() === 'phone' ? w.tile : w.loop)),
+];
 
 export function PageOpenProvider({ children }) {
   const [open, setOpen] = useState(() => isMotionReduced());

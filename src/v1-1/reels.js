@@ -24,3 +24,6 @@ export const reels = [
   reelById('talk'),
 ];
 export const reelOf = (id) => reels.find((r) => r.id === id);
+
+// the short clip behind the websites card of the services
+export const webReel = { id: 'webReel', poster: '/media/web-reel.webp', tile: '/media/web-reel-tile.mp4', loop: '/media/web-reel.mp4' };
