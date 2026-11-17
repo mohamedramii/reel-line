@@ -15,13 +15,14 @@ import { clamp, useHDrag } from './line.js';
 // The physical order never mirrors (real left, reel right): the name is English. `--x` on the stage is the line's
 // place, 0 (far left: all reel) to 100 (far right: all real).
 export const ROWS = {
-  wide: ['near', 'santos', 'ghazala', 'talk', 'vega', 'mamoBite'],
-  mid: ['near', 'ghazala', 'talk', 'vega'],
+  wide: ['near', 'zat', 'ghazala', 'zatTrio', 'vega'],
+  mid: ['near', 'ghazala', 'zat', 'vega'],
   phone: ['ghazala', 'vega'],
 };
 // which of the three the screen is now (the loading screen asks, before anything is drawn)
 export const sizeNow = () => (window.matchMedia('(max-width: 759px)').matches ? 'phone' : window.matchMedia('(max-width: 1099px)').matches ? 'mid' : 'wide');
-const START = { wide: 60, mid: 60, phone: 65 };
+// where the line starts: through the middle of a cell, never on a seam between two (five cells wide: the middle one)
+const START = { wide: 50, mid: 60, phone: 65 };
 const SWAY = { wide: 1.7, mid: 2.2, phone: 3 }; // how far the line sways (in % of the strip) until the first touch
 const STEP = 5;
 // cells that are wholly on the real side; the rest are at least partly reel and may play

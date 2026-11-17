@@ -69,10 +69,12 @@
 }
 
 /* ------------------------------------------------------------ the cut: a held scene */
-.cut.is-held { height: calc((100svh - var(--hh)) * 4); }
+/* `--n` is the number of reels (set by the scene): half a screen of scroll for each, after the first screen */
+.cut { --n: 6; }
+.cut.is-held { height: calc((100svh - var(--hh)) * (1 + var(--n) * 0.5)); }
 .cut__stage {
   --ph: 0; --k: 4;
-  --th: calc((100vw - 2 * var(--pad)) / (6 * var(--k)) * 1.7778 + 2px); /* film height: a 9:16 frame one cell wide */
+  --th: calc((100vw - 2 * var(--pad)) / (var(--n) * var(--k)) * 1.7778 + 2px); /* film height: a 9:16 frame one cell wide */
   --py: clamp(16px, 3svh, 28px);
   --gap: clamp(14px, 2.8svh, 26px);
   --tl: calc(var(--th) + 46px);
@@ -106,9 +108,9 @@
 
 .tl { grid-area: tl; position: relative; direction: ltr; touch-action: pan-y; cursor: ew-resize; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
 .is-flat .tl { cursor: auto; }
-.tl__blocks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.tl__blocks { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 4px; }
 .tl__blocks li { min-width: 0; }
-.is-held .tl__blocks li { --loc: clamp(0, calc(var(--ph) * 6 - var(--i)), 1); }
+.is-held .tl__blocks li { --loc: clamp(0, calc(var(--ph) * var(--n) - var(--i)), 1); }
 .is-flat .tl__blocks li { --loc: 0; }
 .is-flat .tl__blocks li.is-on { --loc: 1; }
 .tl__blocks button { display: grid; width: 100%; min-width: 0; text-align: left; cursor: inherit; }

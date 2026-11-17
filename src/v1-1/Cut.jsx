@@ -7,8 +7,8 @@ import { getLenis, headerH, useInView, useMedia, useRunway } from '@shared/scrol
 import { cachedUrl } from '@shared/preload.js';
 import { pad2, useHDrag } from './line.js';
 
-// The cut: a held scene laid out like an edit suite. A 9:16 viewer, and under it a timeline with one track of six
-// clip blocks (each a filmstrip of that reel) and the white line as its playhead.
+// The cut: a held scene laid out like an edit suite. A 9:16 viewer, and under it a timeline with one track of clip
+// blocks, one for each reel of ./reels.js (each a filmstrip of that reel), and the line as its playhead.
 // The page scroll moves the playhead across the track (the scroll is the single source of truth: dragging the
 // playhead or tapping a block only scrolls the page), and the viewer shows the very frame under the playhead by
 // setting video.currentTime on a "scrub" copy of the clip (a keyframe every 3 frames).
@@ -26,7 +26,10 @@ const stripSrc = (r) => `/img/d2-strip-${r.id}.webp`;
 const greySrc = (r) => `/img/d2-strip-${r.id}-grey.webp`; // the same filmstrip in grey, a picture of its own
 const TICKS = [0, 1, 2, 3, 4, 5, 6];
 // which of the strip's 8 frames a block shows, by how many fit: each stands for its share of the clip
-const FRAMES = { 4: [1, 3, 5, 7], 3: [1, 4, 7], 2: [2, 6] };
+const FRAMES = { 5: [0, 2, 4, 5, 7], 4: [1, 3, 5, 7], 3: [1, 4, 7], 2: [2, 6] };
+// how many frames a block shows: the whole track keeps about the same number of frames (and so the same height)
+// whatever the number of reels: 24 across a wide screen, 18 across a middle one, and two a block on a phone
+const perBlock = (size) => (size === 'phone' ? 2 : Math.max(2, Math.min(5, Math.round((size === 'mid' ? 18 : 24) / N))));
 
 // minutes : seconds : frames, in the clip's own real time
 const timecode = (s) => {
@@ -41,7 +44,7 @@ export default function Cut() {
   const openReel = useReelModal();
   const phone = useMedia('(max-width: 759px)');
   const mid = useMedia('(max-width: 1099px)');
-  const frames = FRAMES[phone ? 2 : mid ? 3 : 4];
+  const frames = FRAMES[perBlock(phone ? 'phone' : mid ? 'mid' : 'wide')];
 
   const runway = useRef(null);
   const stage = useRef(null);
@@ -135,7 +138,7 @@ export default function Cut() {
   };
 
   return (
-    <section className={`cut ${reduced ? 'is-flat' : 'is-held'}`} id="cut" aria-labelledby="cut-h" ref={runway}>
+    <section className={`cut ${reduced ? 'is-flat' : 'is-held'}`} id="cut" aria-labelledby="cut-h" ref={runway} style={{ '--n': N }}>
       <div className="scr cut__stage" ref={stage} style={reduced ? { '--k': frames.length, '--ph': active / N } : { '--k': frames.length }}>
         <header className="head cut__head">
           <h2 id="cut-h">{k.h2}</h2>

@@ -1,17 +1,16 @@
-// The page's six reels: three new ones (Ghazala, Near Cafe, De La Vega, added 2026-11-15) and three of the
-// shared ones. They took the places of the zat reel (the only one with no full version with sound), the second
-// Mamo Fried Chicken reel (the same brand twice) and the Alexandria places reel.
+// The page's five reels: Ghazala, Near Cafe and De La Vega (added 2026-11-15), and two zat reels (added 2026-11-17).
 // `tile` is a 360p cut of the first seven of the reel's best twelve seconds, `loop` those twelve at 720p,
 // `full` the whole reel with sound. The cut also has a scrub clip and a filmstrip of each.
+// The two zat reels are short (10 and 6.8 seconds) and are used whole.
 // The first screen plays the Ghazala reel.
-import { reelById } from '@shared/content.js';
 
-const fresh = (id, focus = '50% 50%') => ({
+// id: also the name of the reel's scrub clip and filmstrip. file: the name of its files in /media (the id, unless given).
+const fresh = (id, focus = '50% 50%', file = id) => ({
   id,
-  poster: `/media/${id}.webp`,
-  tile: `/media/${id}-tile.mp4`,
-  loop: `/media/${id}.mp4`,
-  full: `/media/${id}-full.mp4`,
+  poster: `/media/${file}.webp`,
+  tile: `/media/${file}-tile.mp4`,
+  loop: `/media/${file}.mp4`,
+  full: `/media/${file}-full.mp4`,
   focus, // object-position when the 9:16 frame is cropped
 });
 
@@ -19,9 +18,8 @@ export const reels = [
   fresh('ghazala', '50% 45%'),
   fresh('near', '50% 50%'),
   fresh('vega', '50% 55%'),
-  reelById('santos'),
-  reelById('mamoBite'),
-  reelById('talk'),
+  fresh('zat', '50% 50%'), // cups on the counter, the latte, "Made to start your day"
+  fresh('zatTrio', '50% 50%', 'zat-trio'), // the iced latte in three shots at once
 ];
 export const reelOf = (id) => reels.find((r) => r.id === id);
 

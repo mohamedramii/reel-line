@@ -29,7 +29,7 @@ function firstClips() {
   const hero = reels.find((r) => r.id === 'ghazala'); // the first screen's reel (see Hero.jsx)
   return [size === 'phone' ? hero.tile : hero.loop, ...ROWS[size].map((id) => reels.find((r) => r.id === id).tile)];
 }
-// What goes on downloading behind the open page, in the order the visitor meets it: the six scrub clips of the cut
+// What goes on downloading behind the open page, in the order the visitor meets it: the scrub clips of the cut
 // (two screens further down), then the short clip behind the websites card and the screen recordings of the
 // websites section, in the size this screen plays them. So every clip on the page starts from memory.
 const laterClips = () => [

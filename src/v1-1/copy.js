@@ -44,11 +44,13 @@ const copy = {
       open: (title) => `شوف ريل ${title} كامل بالصوت`,
       track: 'تراك الريلز: اسحب الخط أو دوس على أي ريل',
     },
-    // the three new reels: the brand's name as it is written in the reel, and what the reel shows
+    // the page's reels: the brand's name as it is written in the reel, and what the reel shows
     reels: {
       ghazala: { title: 'Ghazala', note: 'زيارة وتجربة الأكل' },
       near: { title: 'Near Cafe', note: 'جولة في المكان' },
       vega: { title: 'De La Vega', note: 'البرجر طبقة طبقة' },
+      zat: { title: 'zat', note: 'كوباية تبدأ بيها يومك' },
+      zatTrio: { title: 'zat', note: 'الآيس لاتيه في تلات لقطات' },
     },
     services: {
       h2: 'ست خدمات، وكل واحدة مربوطة باللي بعدها.',
@@ -151,6 +153,8 @@ const copy = {
       ghazala: { title: 'Ghazala', note: 'A visit and a tasting' },
       near: { title: 'Near Cafe', note: 'A tour of the place' },
       vega: { title: 'De La Vega', note: 'The burger, layer by layer' },
+      zat: { title: 'zat', note: 'A cup to start the day' },
+      zatTrio: { title: 'zat', note: 'The iced latte in three shots' },
     },
     services: {
       h2: 'Six services, each linked to the next.',
