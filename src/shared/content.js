@@ -6,8 +6,8 @@ export const brand = {
   name: 'reel line',
   nameAr: 'ريل لاين',
   line: 'Ideas, connected.', // the kit's tagline, English only
-  phone: '+20 121 164 7415',
-  whatsapp: 'https://wa.me/201211647415',
+  phone: '+20 12 81840466', // the agency's number, written as its owner gave it on 19 Nov 2026: the only number on the site
+  whatsapp: 'https://wa.me/201281840466',
 };
 
 // Price list in EGP. Package savings are computed from these, never typed.
